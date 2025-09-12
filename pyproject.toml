@@ -1,0 +1,40 @@
+[project]
+name = "resume-builder-backend"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "abeeto",email = "59943893+abeeto@users.noreply.github.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "django>=5.0",
+    "djangorestframework>=3.15",
+    "psycopg2-binary>=2.9",
+    "gunicorn>=22.0",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.13.0"
+pre-commit = "^4.3.0"
+
+[tool.ruff]
+# Set the target Python version
+target-version = "py313" 
+
+[tool.ruff.lint]
+# Select the rules you want to enable.
+# "E" for pycodestyle errors, "F" for pyflakes errors, 
+# "I" for isort rules, and "UP" for pyupgrade rules.
+select = ["E", "F", "I", "UP"]
+ignore = []
+
+[tool.ruff.format]
+# Enable Ruff's formatter
+quote-style = "single"
+indent-style = "space"
