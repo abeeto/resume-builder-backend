@@ -46,4 +46,4 @@ EXPOSE 8000
 
 # Change to Django project directory and start server
 WORKDIR /app/resume-builder-django
-CMD ["gunicorn", "-c", "gunicorn.conf.py", "./resume-builder-django/core.wsgi:application"]
+CMD ["gunicorn", "-c", "../gunicorn.conf.py", "core.wsgi:application"]
