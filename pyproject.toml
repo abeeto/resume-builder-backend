@@ -28,6 +28,7 @@ pre-commit = "^4.3.0"
 [tool.ruff]
 # Set the target Python version
 target-version = "py313" 
+line-length = 88
 
 [tool.ruff.lint]
 # Select the rules you want to enable.
@@ -35,13 +36,11 @@ target-version = "py313"
 # "I" for isort rules, and "UP" for pyupgrade rules.
 select = ["E", "F", "I", "UP"]
 ignore = []
-line-length = 88
 
 [tool.ruff.format]
 # Enable Ruff's formatter
 quote-style = "single"
 indent-style = "space"
-line-length = 88 
 
 [tool.poetry]
 packages = [
