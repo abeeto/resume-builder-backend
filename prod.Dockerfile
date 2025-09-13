@@ -1,56 +1,49 @@
-# Multi-stage build for PROD
-FROM python:3.13-slim as builder
+FROM python:3.13-slim
 
-# ENV for Build stage
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 ENV POETRY_NO_INTERACTION=1
-ENV POETRY_VENV_IN_PROJECT=1
+ENV POETRY_VENV_IN_PROJECT=0
 ENV POETRY_CACHE_DIR=/tmp/poetry_cache
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
+# Install system dependencies (runtime only)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libpq5 \
+        build-essential \
+        libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Poetry
 RUN pip install poetry
 
+# Create non-root user
+RUN groupadd -r django && useradd --no-log-init -r -g django django
+
+# Set work directory
 WORKDIR /app
 
-COPY pyproject.toml poetry.lock ./
+# Copy poetry files
+COPY pyproject.toml poetry.lock* ./
 
-RUN poetry config virtualenvs.create true \
+# Install dependencies globally (no venv needed in container)
+RUN poetry config virtualenvs.create false \
     && poetry install --only=main --no-root \
     && rm -rf $POETRY_CACHE_DIR
 
-# PROD stage
-FROM python:3.13-slim as production
+# Remove build dependencies to reduce image size
+RUN apt-get purge -y --auto-remove build-essential libpq-dev
 
-# ENV for PROD stage
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV DJANGO_SETTINGS_MODULE=your_project.settings.production
-
-# Install only runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq5 \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get purge -y --auto-remove
-
-# Create non-root user for security
-RUN groupadd -r django && useradd --no-log-init -r -g django django
-
-WORKDIR /app
-
-# Copy virtual environment from builder stage
-COPY --from=builder /app/.venv /app/.venv
-
-# to use venv
-ENV PATH="/app/.venv/bin:$PATH"
-
+# Copy project files
 COPY --chown=django:django . .
 
+# Switch to non-root user
 USER django
 
+# Expose port
 EXPOSE 8000
 
+# Change to Django project directory and start server
 WORKDIR /app/resume-builder-django
-CMD ["gunicorn", "-c", "gunicorn.conf.py", "your_project.wsgi:application"]
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "./resume-builder-django/core.wsgi:application"]
