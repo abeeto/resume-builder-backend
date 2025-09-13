@@ -17,18 +17,30 @@ import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-
+env = environ.Env(
+    DEBUG=(bool, False),
+)
+environ.Env.read_env(BASE_DIR / '.env')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o&wp@k4a8j29m!h-we%uls&&na1&6swr@j%4e#xgxb_j0f*!+g'
+SECRET_KEY = env(
+    'SECRET_KEY',
+    default='django-insecure-o&wp@k4a8j29m!h-we%uls&&na1&6swr@j%4e#xgxb_j0f*!+g',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
+RENDER_EXTERNAL_HOSTNAME = env('RENDER_EXTERNAL_HOSTNAME', default=None)
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
+ADDITIONAL_ALLOWED_HOSTS = env('ALLOWED_HOSTS', default='')
+if ADDITIONAL_ALLOWED_HOSTS:
+    ALLOWED_HOSTS.extend([host.strip() for host in ADDITIONAL_ALLOWED_HOSTS.split(',')])
 # Application definition
 
 INSTALLED_APPS = [
