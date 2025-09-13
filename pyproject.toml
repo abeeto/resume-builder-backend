@@ -44,5 +44,5 @@ indent-style = "space"
 
 [tool.poetry]
 packages = [
-    { include = "resume-builder-backend" }
+    { include = "resume-builder-django" }
 ]
