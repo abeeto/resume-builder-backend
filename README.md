@@ -30,7 +30,8 @@ This repository contains the backend for the Pavetheway.ai resume builder applic
 ---
 
 ## API Documentation
-Using Swagger API, to see the api on deployed server visit: [to be added]
+Using Swagger API, to see the api on deployed server visit: 
+  `https://resume-builder-backend-atlm.onrender.com/api/schema/swagger-ui`
 
 
 To see the API docs on localhost visit:
