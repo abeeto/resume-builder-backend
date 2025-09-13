@@ -42,9 +42,7 @@ tmp_upload_dir = None
 # certfile = None
 
 # Django-specific settings
-django_settings = os.environ.get(
-    'DJANGO_SETTINGS_MODULE', 'your_project.settings.production'
-)
+django_settings = os.environ.get('DJANGO_SETTINGS_MODULE', 'core.settings.production')
 raw_env = [
     f'DJANGO_SETTINGS_MODULE={django_settings}',
 ]
