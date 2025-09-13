@@ -10,14 +10,31 @@ This repository contains the backend for the Pavetheway.ai resume builder applic
 - **Deployment**: Render
 
 ## Local Development
+    To run django app and local postgres db on a container for testing/development
 
-_Instructions on how to set up and run the project locally will be added here._
+  ### 1. Copy environment settings
+  `cp .env.example .env`
+
+  ### 2. Start the entire stack
+  `docker compose up`
+
+  ### Or rebuild and start
+  `docker compose up --build`
+
+  ### To end session:
+  `docker compose down`
+
+  ### To clear out database
+  `docker compose down --volumes`
 
 ---
 
 ## API Documentation
+Using Swagger API, to see the api on deployed server visit: [to be added]
 
-_Details on the API endpoints will be added here._
+
+To see the API docs on localhost visit:
+    `http://localhost:8000/api/schema/swagger-ui`
 
 ---
 
