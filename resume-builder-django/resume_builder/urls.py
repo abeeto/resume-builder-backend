@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import ResumeCreateAPIView
+from .apis import ResumeCreateApi
 
 urlpatterns = [
-    path('resume/', ResumeCreateAPIView.as_view(), name='resume-create'),
+    path('resume/', ResumeCreateApi.as_view(), name='resume-create'),
 ]
