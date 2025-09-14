@@ -17,3 +17,17 @@ class BaseModel(models.Model):
 
 class Resume(BaseModel):
     pass
+
+
+class PersonalInformation(BaseModel):
+    full_name = models.CharField(max_length=100, blank=True, default='')
+    email = models.EmailField(max_length=200, blank=True, default='')
+    phone_number = models.CharField(max_length=20, blank=True, default='')
+
+    # one to one with resume
+    resume = models.OneToOneField(
+        Resume, on_delete=models.CASCADE, related_name='personal_info'
+    )
+
+    def __str__(self):
+        return f'{self.full_name} - {self.email} - {self.phone_number}'
