@@ -34,3 +34,34 @@ def personal_information_create(
     personal_info.save()
 
     return personal_info
+
+
+def personal_information_update(
+    *,
+    personal_info_id: str,
+    full_name: str = None,
+    email: str = None,
+    phone_number: str = None,
+) -> PersonalInformation:
+    """
+    Updates personal information fields.
+    Only updates fields that are provided (not None).
+    """
+    try:
+        personal_info = PersonalInformation.objects.get(id=personal_info_id)
+    except PersonalInformation.DoesNotExist:
+        raise ValueError(
+            f'Personal information with id {personal_info_id} does not exist'
+        )
+
+    if full_name is not None:
+        personal_info.full_name = full_name
+    if email is not None:
+        personal_info.email = email
+    if phone_number is not None:
+        personal_info.phone_number = phone_number
+
+    personal_info.full_clean()
+    personal_info.save()
+
+    return personal_info
