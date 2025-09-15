@@ -65,3 +65,33 @@ def personal_information_update(
     personal_info.save()
 
     return personal_info
+
+
+def personal_information_upsert(
+    *, resume_id: str, full_name: str = '', email: str = '', phone_number: str = ''
+) -> PersonalInformation:
+    """
+    Creates or updates personal information for a resume.
+    If personal information already exists, it updates it.
+    If it doesn't exist, it creates new personal information.
+    """
+    try:
+        resume = Resume.objects.get(id=resume_id)
+    except Resume.DoesNotExist:
+        raise ValueError(f'Resume with id {resume_id} does not exist')
+
+    try:
+        personal_info = resume.personal_info
+        personal_info.full_name = full_name
+        personal_info.email = email
+        personal_info.phone_number = phone_number
+        personal_info.full_clean()
+        personal_info.save()
+        return personal_info
+    except PersonalInformation.DoesNotExist:
+        personal_info = PersonalInformation(
+            resume=resume, full_name=full_name, email=email, phone_number=phone_number
+        )
+        personal_info.full_clean()
+        personal_info.save()
+        return personal_info
