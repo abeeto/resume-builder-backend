@@ -83,7 +83,15 @@ class PersonalInformationUpsertApi(APIView):
         updated_at = serializers.DateTimeField()
 
     def get(self, request, resume_id):
-        personal_info = personal_information_get(resume_id=resume_id)
+        try:
+            personal_info = personal_information_get(resume_id=resume_id)
+        except ValueError as e:
+            if 'Personal information for resume' in str(e) and 'does not exist' in str(
+                e
+            ):
+                personal_info = personal_information_upsert(resume_id=resume_id)
+            else:
+                raise e
         output_serializer = self.OutputSerializer(personal_info)
         return Response(data=output_serializer.data, status=status.HTTP_200_OK)
 
