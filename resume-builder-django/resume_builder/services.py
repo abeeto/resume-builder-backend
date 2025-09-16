@@ -1,5 +1,5 @@
 # services.py - where business logic involving pushing to DB/backend
-from .models import PersonalInformation, Resume
+from .models import Education, PersonalInformation, Resume
 
 
 def resume_create() -> Resume:
@@ -95,3 +95,56 @@ def personal_information_upsert(
         personal_info.full_clean()
         personal_info.save()
         return personal_info
+
+
+def education_create(
+    *,
+    resume_id: str,
+    degree: str = '',
+    start_date: str = '',
+    end_date: str = '',
+    location: str = '',
+) -> Education:
+    """
+    Creates education record for resume
+    """
+    try:
+        resume = Resume.objects.get(id=resume_id)
+    except Resume.DoesNotExist:
+        raise ValueError(f'Resume with id {resume_id} does not exist')
+
+    education = Education(
+        resume=resume,
+        degree=degree,
+        start_date=start_date,
+        end_date=end_date,
+        location=location,
+    )
+    education.full_clean()
+    education.save()
+    return education
+
+
+def education_update(
+    *,
+    education_id: str,
+    degree: str = '',
+    start_date: str = '',
+    end_date: str = '',
+    location: str = '',
+) -> Education:
+    """
+    Updates education record.
+    """
+    try:
+        education = Education.objects.get(id=education_id)
+    except Education.DoesNotExist:
+        raise ValueError(f'Education with id {education_id} does not exist')
+
+    education.degree = degree
+    education.start_date = start_date
+    education.end_date = end_date
+    education.location = location
+    education.full_clean()
+    education.save()
+    return education

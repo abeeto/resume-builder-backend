@@ -1,6 +1,8 @@
 from django.urls import path
 
 from .apis import (
+    EducationListApi,
+    EducationUpdateApi,
     PersonalInformationUpsertApi,
     ResumeCreateApi,
     ResumeReadApi,
@@ -13,5 +15,15 @@ urlpatterns = [
         'resume/<uuid:resume_id>/personal-info/',
         PersonalInformationUpsertApi.as_view(),
         name='personal-info-upsert',
+    ),
+    path(
+        'resume/<uuid:resume_id>/education/',
+        EducationListApi.as_view(),
+        name='education-list',
+    ),
+    path(
+        'education/<uuid:education_id>/',
+        EducationUpdateApi.as_view(),
+        name='education-update',
     ),
 ]

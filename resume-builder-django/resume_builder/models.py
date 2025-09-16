@@ -31,3 +31,21 @@ class PersonalInformation(BaseModel):
 
     def __str__(self):
         return f'{self.full_name} - {self.email} - {self.phone_number}'
+
+
+class Education(BaseModel):
+    degree = models.CharField(max_length=200)
+    start_date = models.CharField(max_length=50)
+    end_date = models.CharField(max_length=50, blank=True, null=True)
+    location = models.CharField(max_length=100, blank=True)
+
+    # many to one relationship with resume
+    resume = models.ForeignKey(
+        Resume, on_delete=models.CASCADE, related_name='education_records'
+    )
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.degree}'
