@@ -4,6 +4,9 @@ from .apis import (
     EducationDeleteApi,
     EducationListApi,
     EducationUpdateApi,
+    ExperienceDeleteApi,
+    ExperienceListApi,
+    ExperienceUpdateApi,
     PersonalInformationUpsertApi,
     ResumeCreateApi,
     ResumeReadApi,
@@ -31,5 +34,20 @@ urlpatterns = [
         'education/<uuid:education_id>/delete/',
         EducationDeleteApi.as_view(),
         name='education-delete',
+    ),
+    path(
+        'resume/<uuid:resume_id>/experience/',
+        ExperienceListApi.as_view(),
+        name='experience-list',
+    ),
+    path(
+        'experience/<uuid:experience_id>/',
+        ExperienceUpdateApi.as_view(),
+        name='experience-update',
+    ),
+    path(
+        'experience/<uuid:experience_id>/delete/',
+        ExperienceDeleteApi.as_view(),
+        name='experience-delete',
     ),
 ]

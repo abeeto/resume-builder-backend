@@ -1,5 +1,5 @@
 # services.py - where business logic involving pushing to DB/backend
-from .models import Education, PersonalInformation, Resume
+from .models import Education, Experience, PersonalInformation, Resume
 
 
 def resume_create() -> Resume:
@@ -160,3 +160,76 @@ def education_delete(*, education_id: str) -> None:
         raise ValueError(f'Education with id {education_id} does not exist')
 
     education.delete()
+
+
+def experience_create(
+    *,
+    resume_id: str,
+    company: str = '',
+    position: str = '',
+    description: str = '',
+    start_date: str = '',
+    end_date: str = '',
+    location: str = '',
+) -> Experience:
+    """
+    Creates experience record for resume
+    """
+    try:
+        resume = Resume.objects.get(id=resume_id)
+    except Resume.DoesNotExist:
+        raise ValueError(f'Resume with id {resume_id} does not exist')
+
+    experience = Experience(
+        resume=resume,
+        company=company,
+        position=position,
+        description=description,
+        start_date=start_date,
+        end_date=end_date,
+        location=location,
+    )
+    experience.full_clean()
+    experience.save()
+    return experience
+
+
+def experience_update(
+    *,
+    experience_id: str,
+    company: str = '',
+    position: str = '',
+    description: str = '',
+    start_date: str = '',
+    end_date: str = '',
+    location: str = '',
+) -> Experience:
+    """
+    Updates experience record.
+    """
+    try:
+        experience = Experience.objects.get(id=experience_id)
+    except Experience.DoesNotExist:
+        raise ValueError(f'Experience with id {experience_id} does not exist')
+
+    experience.company = company
+    experience.position = position
+    experience.description = description
+    experience.start_date = start_date
+    experience.end_date = end_date
+    experience.location = location
+    experience.full_clean()
+    experience.save()
+    return experience
+
+
+def experience_delete(*, experience_id: str) -> None:
+    """
+    Deletes experience record by id
+    """
+    try:
+        experience = Experience.objects.get(id=experience_id)
+    except Experience.DoesNotExist:
+        raise ValueError(f'Experience with id {experience_id} does not exist')
+
+    experience.delete()

@@ -41,6 +41,12 @@ if RENDER_EXTERNAL_HOSTNAME:
 ADDITIONAL_ALLOWED_HOSTS = env('ALLOWED_HOSTS', default='')
 if ADDITIONAL_ALLOWED_HOSTS:
     ALLOWED_HOSTS.extend([host.strip() for host in ADDITIONAL_ALLOWED_HOSTS.split(',')])
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'https://resume-builder-frontend-ebon.vercel.app',
+]
+
 # Application definition
 
 INSTALLED_APPS = [

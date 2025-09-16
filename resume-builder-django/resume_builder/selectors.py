@@ -38,3 +38,15 @@ def education_list(*, resume_id: str):
         raise ValueError(f'Resume with id {resume_id} does not exist')
 
     return resume.education_records.all()
+
+
+def experience_list(*, resume_id: str):
+    """
+    Gets all experience records for a resume by resume_id
+    """
+    try:
+        resume = Resume.objects.get(id=resume_id)
+    except Resume.DoesNotExist:
+        raise ValueError(f'Resume with id {resume_id} does not exist')
+
+    return resume.experience_records.all()

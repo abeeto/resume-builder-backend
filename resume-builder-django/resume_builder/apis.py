@@ -2,11 +2,19 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .selectors import education_list, personal_information_get, resume_get
+from .selectors import (
+    education_list,
+    experience_list,
+    personal_information_get,
+    resume_get,
+)
 from .services import (
     education_create,
     education_delete,
     education_update,
+    experience_create,
+    experience_delete,
+    experience_update,
     personal_information_upsert,
     resume_create,
 )
@@ -180,4 +188,113 @@ class EducationDeleteApi(APIView):
 
     def delete(self, request, education_id):
         education_delete(education_id=education_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# EXPERIENCE
+
+
+class ExperienceListApi(APIView):
+    """
+    GET: Returns all experience records for a resume
+    POST: Creates new experience for a resume
+    """
+
+    class InputSerializer(serializers.Serializer):
+        company = serializers.CharField(
+            max_length=200, required=False, allow_blank=True
+        )
+        position = serializers.CharField(
+            max_length=200, required=False, allow_blank=True
+        )
+        description = serializers.CharField(required=False, allow_blank=True)
+        start_date = serializers.CharField(
+            max_length=50, required=False, allow_blank=True
+        )
+        end_date = serializers.CharField(
+            max_length=50, required=False, allow_blank=True
+        )
+        location = serializers.CharField(
+            max_length=100, required=False, allow_blank=True
+        )
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.UUIDField()
+        company = serializers.CharField()
+        position = serializers.CharField()
+        description = serializers.CharField()
+        start_date = serializers.CharField()
+        end_date = serializers.CharField()
+        location = serializers.CharField()
+        resume_id = serializers.UUIDField(source='resume.id')
+        created_at = serializers.DateTimeField()
+        updated_at = serializers.DateTimeField()
+
+    def get(self, request, resume_id):
+        experience_records = experience_list(resume_id=resume_id)
+        output_serializer = self.OutputSerializer(experience_records, many=True)
+        return Response(data=output_serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, resume_id):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        experience = experience_create(resume_id=resume_id, **serializer.validated_data)
+        output_serializer = self.OutputSerializer(experience)
+        return Response(data=output_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ExperienceUpdateApi(APIView):
+    """
+    PUT: Updates existing experience
+    """
+
+    class InputSerializer(serializers.Serializer):
+        company = serializers.CharField(
+            max_length=200, required=False, allow_blank=True
+        )
+        position = serializers.CharField(
+            max_length=200, required=False, allow_blank=True
+        )
+        description = serializers.CharField(required=False, allow_blank=True)
+        start_date = serializers.CharField(
+            max_length=50, required=False, allow_blank=True
+        )
+        end_date = serializers.CharField(
+            max_length=50, required=False, allow_blank=True
+        )
+        location = serializers.CharField(
+            max_length=100, required=False, allow_blank=True
+        )
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.UUIDField()
+        company = serializers.CharField()
+        position = serializers.CharField()
+        description = serializers.CharField()
+        start_date = serializers.CharField()
+        end_date = serializers.CharField()
+        location = serializers.CharField()
+        resume_id = serializers.UUIDField(source='resume.id')
+        created_at = serializers.DateTimeField()
+        updated_at = serializers.DateTimeField()
+
+    def put(self, request, experience_id):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        experience = experience_update(
+            experience_id=experience_id, **serializer.validated_data
+        )
+        output_serializer = self.OutputSerializer(experience)
+        return Response(data=output_serializer.data, status=status.HTTP_200_OK)
+
+
+class ExperienceDeleteApi(APIView):
+    """
+    DELETE: Deletes existing experience
+    """
+
+    def delete(self, request, experience_id):
+        experience_delete(experience_id=experience_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
