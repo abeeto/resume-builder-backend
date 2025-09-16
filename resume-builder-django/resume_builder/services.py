@@ -148,3 +148,15 @@ def education_update(
     education.full_clean()
     education.save()
     return education
+
+
+def education_delete(*, education_id: str) -> None:
+    """
+    Deletes education record by id
+    """
+    try:
+        education = Education.objects.get(id=education_id)
+    except Education.DoesNotExist:
+        raise ValueError(f'Education with id {education_id} does not exist')
+
+    education.delete()

@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from .selectors import education_list, personal_information_get, resume_get
 from .services import (
     education_create,
+    education_delete,
     education_update,
     personal_information_upsert,
     resume_create,
@@ -170,3 +171,13 @@ class EducationUpdateApi(APIView):
         )
         output_serializer = self.OutputSerializer(education)
         return Response(data=output_serializer.data, status=status.HTTP_200_OK)
+
+
+class EducationDeleteApi(APIView):
+    """
+    DELETE: Deletes existing education
+    """
+
+    def delete(self, request, education_id):
+        education_delete(education_id=education_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)

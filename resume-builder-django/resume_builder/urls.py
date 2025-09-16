@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .apis import (
+    EducationDeleteApi,
     EducationListApi,
     EducationUpdateApi,
     PersonalInformationUpsertApi,
@@ -25,5 +26,10 @@ urlpatterns = [
         'education/<uuid:education_id>/',
         EducationUpdateApi.as_view(),
         name='education-update',
+    ),
+    path(
+        'education/<uuid:education_id>/delete/',
+        EducationDeleteApi.as_view(),
+        name='education-delete',
     ),
 ]
