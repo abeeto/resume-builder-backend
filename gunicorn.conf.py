@@ -1,4 +1,3 @@
-import multiprocessing
 import os
 
 # Server socket
@@ -6,7 +5,7 @@ bind = '0.0.0.0:8000'
 backlog = 2048
 
 # Worker processes
-workers = int(os.environ.get('WEB_CONCURRENCY', multiprocessing.cpu_count() * 2 + 1))
+workers = int(os.environ.get('WEB_CONCURRENCY', 1))
 worker_class = 'sync'
 worker_connections = 1000
 max_requests = 1000

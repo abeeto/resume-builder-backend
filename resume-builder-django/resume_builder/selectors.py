@@ -7,7 +7,7 @@ def personal_information_get(*, resume_id: str) -> PersonalInformation:
     Gets personal information for a resume by resume_id
     """
     try:
-        resume = Resume.objects.get(id=resume_id)
+        resume = Resume.objects.select_related('personal_info').get(id=resume_id)
     except Resume.DoesNotExist:
         raise ValueError(f'Resume with id {resume_id} does not exist')
 
@@ -33,7 +33,7 @@ def education_list(*, resume_id: str):
     Gets all education records for a resume by resume_id
     """
     try:
-        resume = Resume.objects.get(id=resume_id)
+        resume = Resume.objects.prefetch_related('education_records').get(id=resume_id)
     except Resume.DoesNotExist:
         raise ValueError(f'Resume with id {resume_id} does not exist')
 
@@ -45,7 +45,7 @@ def experience_list(*, resume_id: str):
     Gets all experience records for a resume by resume_id
     """
     try:
-        resume = Resume.objects.get(id=resume_id)
+        resume = Resume.objects.prefetch_related('experience_records').get(id=resume_id)
     except Resume.DoesNotExist:
         raise ValueError(f'Resume with id {resume_id} does not exist')
 

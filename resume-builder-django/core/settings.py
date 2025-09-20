@@ -100,6 +100,13 @@ DATABASES = {
     'default': env.db(),
 }
 
+# Memory and performance optimizations for free tier hosting (commented for now)
+# DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+# FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+
+# Database connection optimizations (commented for now)
+# DATABASES['default']['CONN_MAX_AGE'] = 60  # Reuse connections for 60 seconds
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
