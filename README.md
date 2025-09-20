@@ -21,11 +21,18 @@ This repository contains the backend for the Pavetheway.ai resume builder applic
   ### Or rebuild and start
   `docker compose up --build`
 
+  ### To update database:
+  `docker compose up -d`
+  `docker exec web python manage.py makemigrations`
+  `docker exec web python manage.py migrate`
+
   ### To end session:
   `docker compose down`
 
   ### To clear out database
   `docker compose down --volumes`
+
+
 
 ---
 
