@@ -1,6 +1,6 @@
 # Resume Builder Backend
 
-This repository contains the backend for the Pavetheway.ai resume builder application. It is built using Django REST Framework and a PostgreSQL database, and is designed to handle the progressive profile completion flow and resume data management.
+It is built using Django REST Framework and a PostgreSQL database, and is designed to handle the progressive profile completion flow and resume data management.
 
 ## Tech Stack
 
