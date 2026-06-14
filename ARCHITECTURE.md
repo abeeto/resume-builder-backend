@@ -32,8 +32,7 @@ Browser
 | **Secrets Manager** | `DATABASE_URL`, `SECRET_KEY`, `ALLOWED_HOSTS` (default AWS-managed KMS key) |
 | **VPC** | Public subnets for the ALB, private subnets for ECS + RDS |
 | **CloudWatch Logs** | Gunicorn stdout — no code change required |
-| **S3 (tfstate)** | Terraform remote state — versioned, separate from the frontend bucket |
-| **DynamoDB** | Terraform state lock table — prevents concurrent `terraform apply` runs |
+| **S3 (tfstate)** | Terraform remote state — versioned, separate from the frontend bucket; lock file stored in the same bucket via `use_lockfile = true` |
 
 ---
 
@@ -54,7 +53,7 @@ terraform/
 └── cdn.tf        # CloudFront: /api/* → ALB, /* → S3
 ```
 
-> **Remote state:** `terraform.tfstate` is stored in S3 (`resume-builder-tfstate-<account-id>/backend/terraform.tfstate`) with DynamoDB locking. The S3 bucket and DynamoDB table are created manually once via AWS CLI before the first `terraform init` — see the pre-apply steps in PLAN.md.
+> **Remote state:** `terraform.tfstate` is stored in S3 (`resume-builder-tfstate-319191253061/backend/terraform.tfstate`) with locking via `use_lockfile = true` (lock file stored in the same S3 bucket, no DynamoDB needed). The S3 bucket is created manually once via AWS CLI before the first `terraform init` — see the pre-apply steps in PLAN.md.
 
 ---
 
