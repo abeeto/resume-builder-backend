@@ -77,8 +77,8 @@ resource "aws_ecs_task_definition" "backend" {
     portMappings = [{ containerPort = 8000, protocol = "tcp" }]
 
     secrets = [
-      { name = "DATABASE_URL",  valueFrom = "${aws_secretsmanager_secret.app.arn}:DATABASE_URL::" },
-      { name = "SECRET_KEY",    valueFrom = "${aws_secretsmanager_secret.app.arn}:SECRET_KEY::" },
+      { name = "DATABASE_URL", valueFrom = "${aws_secretsmanager_secret.app.arn}:DATABASE_URL::" },
+      { name = "SECRET_KEY", valueFrom = "${aws_secretsmanager_secret.app.arn}:SECRET_KEY::" },
       { name = "ALLOWED_HOSTS", valueFrom = "${aws_secretsmanager_secret.app.arn}:ALLOWED_HOSTS::" },
     ]
 
