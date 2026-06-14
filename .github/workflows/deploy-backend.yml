@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'resume-builder-django/**'
+      - 'prod.Dockerfile'
+      - 'pyproject.toml'
+      - 'poetry.lock'
+      - 'gunicorn.conf.py'
 
 jobs:
   deploy:
