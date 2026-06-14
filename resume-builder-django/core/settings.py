@@ -34,9 +34,6 @@ SECRET_KEY = env(
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
-RENDER_EXTERNAL_HOSTNAME = env('RENDER_EXTERNAL_HOSTNAME', default=None)
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 ADDITIONAL_ALLOWED_HOSTS = env('ALLOWED_HOSTS', default='')
 if ADDITIONAL_ALLOWED_HOSTS:
@@ -44,7 +41,6 @@ if ADDITIONAL_ALLOWED_HOSTS:
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://resume-builder-frontend-ebon.vercel.app',
 ]
 
 # Application definition
@@ -157,7 +153,7 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Resume Builder API',
-    'DESCRIPTION': 'API designed for quick and easy updateds resume',
+    'DESCRIPTION': 'API designed for quick and easy updated resume',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
