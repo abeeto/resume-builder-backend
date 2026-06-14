@@ -36,6 +36,8 @@ ADDITIONAL_ALLOWED_HOSTS = env('ALLOWED_HOSTS', default='')
 if ADDITIONAL_ALLOWED_HOSTS:
     ALLOWED_HOSTS.extend([host.strip() for host in ADDITIONAL_ALLOWED_HOSTS.split(',')])
 
+ALLOWED_CIDR_NETS = ['10.0.0.0/16']
+
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
 ]
@@ -55,6 +57,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'allow_cidr.middleware.AllowCIDRMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
