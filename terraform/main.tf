@@ -8,7 +8,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "resume-builder-tfstate-<your-account-id>"
+    bucket         = "resume-builder-tfstate-319191253061"
     key            = "backend/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "resume-builder-tfstate-lock"

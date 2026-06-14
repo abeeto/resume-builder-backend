@@ -82,11 +82,11 @@ These must exist before Terraform can use them as a backend. S3 bucket names are
 ```bash
 # Create the tfstate bucket (versioning keeps history of every state change)
 aws s3api create-bucket \
-  --bucket resume-builder-tfstate-<your-account-id> \
+  --bucket resume-builder-tfstate-319191253061 \
   --region us-east-1
 
 aws s3api put-bucket-versioning \
-  --bucket resume-builder-tfstate-<your-account-id> \
+  --bucket resume-builder-tfstate-319191253061 \
   --versioning-configuration Status=Enabled
 
 # Create the DynamoDB lock table (prevents concurrent applies)
@@ -161,7 +161,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "resume-builder-tfstate-<your-account-id>"
+    bucket         = "resume-builder-tfstate-319191253061"
     key            = "backend/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "resume-builder-tfstate-lock"
