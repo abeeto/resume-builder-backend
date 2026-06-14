@@ -8,11 +8,11 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "resume-builder-tfstate-319191253061"
-    key            = "backend/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "resume-builder-tfstate-lock"
-    encrypt        = true
+    bucket       = "resume-builder-tfstate-319191253061"
+    key          = "backend/terraform.tfstate"
+    region       = "us-east-1"
+    use_lockfile = true
+    encrypt      = true
   }
 }
 

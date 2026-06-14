@@ -89,13 +89,7 @@ aws s3api put-bucket-versioning \
   --bucket resume-builder-tfstate-319191253061 \
   --versioning-configuration Status=Enabled
 
-# Create the DynamoDB lock table (prevents concurrent applies)
-aws dynamodb create-table \
-  --table-name resume-builder-tfstate-lock \
-  --attribute-definitions AttributeName=LockID,AttributeType=S \
-  --key-schema AttributeName=LockID,KeyType=HASH \
-  --billing-mode PAY_PER_REQUEST \
-  --region us-east-1
+# No DynamoDB table needed — use_lockfile stores the lock directly in S3
 ```
 
 **Step 3 — Update `terraform/main.tf` with the backend block** (already done — see Task 2a below)
@@ -164,7 +158,7 @@ terraform {
     bucket         = "resume-builder-tfstate-319191253061"
     key            = "backend/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "resume-builder-tfstate-lock"
+    use_lockfile = true
     encrypt        = true
   }
 }
