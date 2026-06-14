@@ -32,6 +32,8 @@ Browser
 | **Secrets Manager** | `DATABASE_URL`, `SECRET_KEY`, `ALLOWED_HOSTS` (default AWS-managed KMS key) |
 | **VPC** | Public subnets for the ALB, private subnets for ECS + RDS |
 | **CloudWatch Logs** | Gunicorn stdout — no code change required |
+| **S3 (tfstate)** | Terraform remote state — versioned, separate from the frontend bucket |
+| **DynamoDB** | Terraform state lock table — prevents concurrent `terraform apply` runs |
 
 ---
 
@@ -39,7 +41,7 @@ Browser
 
 ```
 terraform/
-├── main.tf       # provider config
+├── main.tf       # provider config + S3 remote backend
 ├── variables.tf  # input variables (region, project name, secrets)
 ├── outputs.tf    # CloudFront URL, ALB DNS, ECR URI, ECS names
 ├── vpc.tf        # VPC, subnets, IGW, NAT gateway, route tables
@@ -52,17 +54,21 @@ terraform/
 └── cdn.tf        # CloudFront: /api/* → ALB, /* → S3
 ```
 
+> **Remote state:** `terraform.tfstate` is stored in S3 (`resume-builder-tfstate-<account-id>/backend/terraform.tfstate`) with DynamoDB locking. The S3 bucket and DynamoDB table are created manually once via AWS CLI before the first `terraform init` — see the pre-apply steps in PLAN.md.
+
 ---
 
 ## Deployment Order
 
-1. `terraform apply` — creates all infrastructure (~25 resources)
-2. Note `cloudfront_url` from Terraform outputs (e.g. `https://d111.cloudfront.net`)
-3. Bootstrap: manually push first Docker image to ECR (before ECS can pull)
-4. Update `ALLOWED_HOSTS` in Secrets Manager to include the CloudFront domain
-5. Force new ECS deployment so the container picks up the updated secret
-6. Push to `main` on the backend repo → GitHub Actions handles all future deploys
-7. Push to `main` on the frontend repo → sync `dist/` to S3 + CloudFront invalidation
+1. Create tfstate S3 bucket + DynamoDB lock table manually via AWS CLI (one-time)
+2. `terraform init` — connects to S3 backend
+3. `terraform apply` — creates all infrastructure (~25 resources)
+4. Note `cloudfront_url` from Terraform outputs (e.g. `https://d111.cloudfront.net`)
+5. Bootstrap: manually push first Docker image to ECR (before ECS can pull)
+6. Update `ALLOWED_HOSTS` in Secrets Manager to include the CloudFront domain
+7. Force new ECS deployment so the container picks up the updated secret
+8. Push to `main` on the backend repo → GitHub Actions handles all future deploys
+9. Push to `main` on the frontend repo → sync `dist/` to S3 + CloudFront invalidation
 
 ---
 
@@ -80,7 +86,6 @@ terraform/
 
 - Custom domain / Route 53
 - Auto-scaling (can add later via ECS Service Auto Scaling on CPU %)
-- Terraform remote state backend (start with local state, add S3 backend later)
 - Auth (APIs remain public for now)
 
 ---

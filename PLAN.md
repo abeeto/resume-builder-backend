@@ -65,7 +65,89 @@ Rationale: CloudFront serves both the frontend and `/api/*` on the same origin, 
 
 **Goal:** Create all AWS infrastructure (VPC → RDS → ECR → ECS → ALB → CloudFront) as Terraform files. Merge and apply before wiring up CI/CD.
 
-> **Note:** Before opening this PR, manually push one image to ECR (see bootstrap step in Task 2e below) so ECS has something to pull on first `terraform apply`.
+### Pre-apply steps (do these before `terraform apply`, in order)
+
+**Step 1 — Validate the config (no AWS creds needed)**
+```bash
+cd terraform/
+terraform fmt -recursive      # normalise formatting; re-stage any changed files
+terraform init -backend=false # download AWS provider plugin only
+terraform validate            # should print: Success! The configuration is valid.
+```
+
+**Step 2 — Create the tfstate S3 bucket and DynamoDB lock table (one-time, manual)**
+
+These must exist before Terraform can use them as a backend. S3 bucket names are globally unique — replace `<your-account-id>` or pick any unique suffix.
+
+```bash
+# Create the tfstate bucket (versioning keeps history of every state change)
+aws s3api create-bucket \
+  --bucket resume-builder-tfstate-<your-account-id> \
+  --region us-east-1
+
+aws s3api put-bucket-versioning \
+  --bucket resume-builder-tfstate-<your-account-id> \
+  --versioning-configuration Status=Enabled
+
+# Create the DynamoDB lock table (prevents concurrent applies)
+aws dynamodb create-table \
+  --table-name resume-builder-tfstate-lock \
+  --attribute-definitions AttributeName=LockID,AttributeType=S \
+  --key-schema AttributeName=LockID,KeyType=HASH \
+  --billing-mode PAY_PER_REQUEST \
+  --region us-east-1
+```
+
+**Step 3 — Update `terraform/main.tf` with the backend block** (already done — see Task 2a below)
+
+**Step 4 — Re-run `terraform init` with real backend**
+```bash
+terraform init   # will prompt to migrate local state to S3 — type "yes"
+```
+
+**Step 5 — Set up AWS credentials locally**
+```bash
+aws configure   # enter Access Key ID, Secret Access Key, region (us-east-1), output (json)
+# verify:
+aws sts get-caller-identity
+```
+
+**Step 6 — Create `terraform/terraform.tfvars`** (git-ignored)
+```hcl
+db_password       = "a-strong-password-here"
+django_secret_key = "a-long-random-string-here"
+```
+> `terraform.tfvars` is in `.gitignore` — never commit it.
+
+**Step 7 — Preview and apply**
+```bash
+terraform plan    # review the ~25 resources to be created
+terraform apply   # type "yes" to confirm; takes ~5-10 min (RDS is slowest)
+```
+Note the `cloudfront_url` output when it finishes.
+
+**Step 8 — Bootstrap: push first Docker image to ECR**
+
+ECS can't start until there's an image to pull. Run from the repo root:
+```bash
+aws ecr get-login-password --region us-east-1 \
+  | docker login --username AWS --password-stdin <ecr_repository_uri>
+docker build -f prod.Dockerfile -t <ecr_repository_uri>:latest .
+docker push <ecr_repository_uri>:latest
+```
+
+**Step 9 — Update ALLOWED_HOSTS secret**
+
+In the AWS console → Secrets Manager → `resume-builder/backend` → edit the secret value, add the CloudFront domain to `ALLOWED_HOSTS`. Then force a new ECS deployment:
+```bash
+aws ecs update-service \
+  --cluster resume-builder-cluster \
+  --service resume-builder-backend \
+  --force-new-deployment \
+  --region us-east-1
+```
+
+---
 
 ### Task 2a · `terraform/main.tf`
 ```hcl
@@ -76,6 +158,14 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+  }
+
+  backend "s3" {
+    bucket         = "resume-builder-tfstate-<your-account-id>"
+    key            = "backend/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "resume-builder-tfstate-lock"
+    encrypt        = true
   }
 }
 
@@ -607,16 +697,12 @@ resource "aws_cloudfront_distribution" "main" {
 }
 ```
 
-### Verify before merging / after `terraform apply`
+### Verify after `terraform apply`
 
-1. `terraform plan` produces no errors and shows expected resource count (~25 resources)
-2. `terraform apply` completes — note the `cloudfront_url` output
-3. Bootstrap: manually push first Docker image to ECR (see Task 2e note above)
-4. ECS service shows 1 running task in the AWS console (may take ~2 min)
-5. ALB target group shows the task as **healthy**
-6. `https://<cloudfront_url>/api/schema/swagger-ui/` returns 200
-
-> **After step 6:** Update the `ALLOWED_HOSTS` secret in Secrets Manager to include the CloudFront domain, then force a new ECS deployment so the container picks it up.
+1. `terraform apply` completes with no errors — note the `cloudfront_url` output
+2. ECS service shows 1 running task in the AWS console (may take ~2 min after ECR bootstrap)
+3. ALB target group shows the task as **healthy**
+4. `https://<cloudfront_url>/api/schema/swagger-ui/` returns 200
 
 ---
 
