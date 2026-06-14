@@ -3,9 +3,20 @@
 Scope: all tasks are within this repo (`resume-builder-backend`).  
 Architecture context and deployment order live in [ARCHITECTURE.md](ARCHITECTURE.md).
 
+CONSTRAINTS:
+- no Git pushes, PRs ==> should be manual, hand off to human (i.e. stop executing) whenever you find yourself needing to do a Git Push or PR
+- do not list yourself (Claude) as co-author
+- commit messages should follow conventional commits
+- every PR/feature should be a new branch
+
+
+STAGES:
+[TOVERIFY] - waiting for manual verification
+[DONE] - tested & approved PR, ready to do next stage as outlined below
+
 ---
 
-## PR 1 — Django Settings Cleanup
+## PR 1 — Django Settings Cleanup [DONE]
 
 **Goal:** Remove Render/Vercel dependencies from `settings.py` so the backend is environment-agnostic.
 
