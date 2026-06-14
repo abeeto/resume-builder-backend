@@ -25,10 +25,7 @@ environ.Env.read_env(BASE_DIR / '.env')
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env(
-    'SECRET_KEY',
-    default='django-insecure-o&wp@k4a8j29m!h-we%uls&&na1&6swr@j%4e#xgxb_j0f*!+g',
-)
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
@@ -89,9 +86,6 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-env = environ.Env()
-environ.Env.read_env(BASE_DIR / '.env')
-
 DATABASES = {
     'default': env.db(),
 }
