@@ -1,5 +1,6 @@
 resource "aws_secretsmanager_secret" "app" {
-  name = "${var.project_name}/backend"
+  name                    = "${var.project_name}/backend"
+  recovery_window_in_days = 0
 }
 
 resource "aws_secretsmanager_secret_version" "app" {
