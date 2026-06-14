@@ -7,7 +7,7 @@ It is built using Django REST Framework and a PostgreSQL database, and is design
 - **Backend**: Django REST Framework
 - **Database**: PostgreSQL
 - **Containerization**: Docker
-- **Deployment**: Render
+- **Deployment**: AWS ECS Fargate + CloudFront
 
 ## Local Development
     To run django app and local postgres db on a container for testing/development
@@ -37,15 +37,16 @@ It is built using Django REST Framework and a PostgreSQL database, and is design
 ---
 
 ## API Documentation
-Using Swagger API, to see the api on deployed server visit: 
-  `https://resume-builder-backend-atlm.onrender.com/api/schema/swagger-ui`
 
+Swagger UI on localhost:
 
-To see the API docs on localhost visit:
-    `http://localhost:8000/api/schema/swagger-ui`
+  `http://localhost:8000/api/schema/swagger-ui`
 
 ---
 
 ## Deployment
 
-_Details on how to deploy the backend to Render will be added here._
+The backend runs on AWS ECS Fargate behind a CloudFront distribution.
+
+- Architecture and infrastructure overview: [ARCHITECTURE.md](ARCHITECTURE.md)
+- Migration plan and PR breakdown: [PLAN.md](PLAN.md)
